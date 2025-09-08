@@ -1,0 +1,46 @@
+package spring.ordersystem.common.config;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+@Configuration
+public class RedisConfig {
+
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
+
+
+    @Bean
+//    @Qualifier : 같은 Bean객체가 여러개 있을 경우 Bean객체를 구분하기 위한 어노테이션
+    @Qualifier("rtInventory")
+    public RedisConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(redisHost); // Redis 서버 호스트
+        configuration.setPort(redisPort); // Redis 기본 포트
+        configuration.setDatabase(0);
+
+        return new LettuceConnectionFactory(configuration);
+    }
+
+    @Bean
+    @Qualifier("rtInventory")
+//    Bean들끼리 서로 의존성을 주입받을때 메서드 파라미터로도 주입가능.
+    //    모든 template중에 무조건 redisTemplate 이라는 메서드명이 반드시 1개는 있어야함.
+    public RedisTemplate<String, String> redisTemplate(@Qualifier("rtInventory") RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
+    }
+}

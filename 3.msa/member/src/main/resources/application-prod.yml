@@ -1,0 +1,45 @@
+server:
+#  포트번호를 0 설정시 0~65535 사이의 랜덤 포트로 설정됨(중복X)
+  port: 8080
+
+eureka:
+  client:
+    enabled: false
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  application:
+    name: member-service
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:3306/ordermsa
+    username: admin
+    password: ${DB_PW}
+    hikari:
+      maximum-pool-size: 1
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  data:
+    redis:
+      host: redis-service
+      port: 6379
+
+servlet:
+  multipart:
+    # 파일 업로드 최대 크기 설정
+    max-file-size: 10MB
+    max-request-size: 10MB
+
+jwt:
+  expirationAt: 1000
+  secretKeyAt: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5Cg==
+  expirationRt: 10000
+  secretKeyRt: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5Cg==
